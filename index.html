@@ -1,106 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>GMDSS GPT Login</title>
+  <meta charset="UTF-8">
+  <title>GMDSS SRC Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/tabletop@1.5.1/tabletop.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 40px;
+      background: #f5f5f5;
+      padding: 50px 20px;
       text-align: center;
-      background-color: #f5f5f5;
     }
 
     h2 {
       margin-bottom: 30px;
     }
 
-    input {
-      padding: 10px;
-      margin: 8px;
-      width: 250px;
+    input, button {
+      padding: 12px;
+      margin: 10px;
+      width: 260px;
       font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      transition: background-color 0.2s ease-in-out;
     }
 
-    .error {
-      color: red;
-      margin-top: 15px;
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 16px;
       font-weight: bold;
     }
 
     .loading {
       color: #333;
-      margin-top: 15px;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: green;
     }
   </style>
 </head>
 <body>
+
   <h2>GMDSS SRC Login</h2>
 
-  <input type="text" id="name" placeholder="Enter your name"><br>
-  <input type="email" id="email" placeholder="Enter your email"><br>
+  <input type="text" id="name" placeholder="Your name"><br>
+  <input type="email" id="email" placeholder="Your email"><br>
   <button onclick="checkAccess()">Login</button>
 
-  <div class="loading" id="loadingMsg"></div>
-  <div class="error" id="errorMsg"></div>
+  <div id="message" class="message"></div>
 
   <script>
     const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
-    
-key: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml",
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml";
 
     function checkAccess() {
       const name = document.getElementById("name").value.trim().toLowerCase();
       const email = document.getElementById("email").value.trim().toLowerCase();
-      const errorMsg = document.getElementById("errorMsg");
-      const loadingMsg = document.getElementById("loadingMsg");
+      const message = document.getElementById("message");
 
-      errorMsg.innerText = "";
-      loadingMsg.innerText = "";
+      message.className = "message loading";
+      message.innerText = "";
 
       if (!name || !email) {
-        errorMsg.innerText = "Please enter both name and email.";
+        message.className = "message error";
+        message.innerText = "Please enter both name and email.";
         return;
       }
 
-      loadingMsg.innerText = "Checking access...";
+      message.innerText = "Checking access...";
 
       Tabletop.init({
-  key: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml",
-  simpleSheet: true,
-  callback: function(data) {
-    console.log("Data received:", data); // Debug log
-    const name = document.getElementById("name").value.trim().toLowerCase();
-    const email = document.getElementById("email").value.trim().toLowerCase();
+        key: SHEET_URL,
+        simpleSheet: true,
+        callback: function(data) {
+          const match = data.find(row =>
+            row.Name?.trim().toLowerCase() === name &&
+            row.Email?.trim().toLowerCase() === email
+          );
 
-    const match = data.find(row =>
-      row.Name?.trim().toLowerCase() === name &&
-      row.Email?.trim().toLowerCase() === email
-    );
-
-    if (match) {
-      loadingMsg.innerText = "✅ Access granted! Redirecting...";
-      setTimeout(() => {
-        window.location.href = GPT_LINK;
-      }, 1000);
-    } else {
-      loadingMsg.innerText = "";
-      errorMsg.innerText = "❌ Access Denied. You are not on the list.";
-    }
-  },
-  error: function(err) {
-    loadingMsg.innerText = "";
-    errorMsg.innerText = "⚠️ Failed to load data. Check the sheet or internet connection.";
-    console.error("Tabletop error:", err);
-  }
-});
-
+          if (match) {
+            message.className = "message success";
+            message.innerText = "✅ Access granted! Redirecting...";
+            setTimeout(() => window.location.href = GPT_LINK, 1200);
+          } else {
+            message.className = "message error";
+            message.innerText = "❌ Access denied. You are not on the list.";
+          }
+        },
+        error: function(err) {
+          message.className = "message error";
+          message.innerText = "⚠️ Failed to load the access list. Try again later.";
+          console.error("Tabletop error:", err);
+        }
+      });
     }
   </script>
 </body>
