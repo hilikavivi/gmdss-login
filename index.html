@@ -1,0 +1,68 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>GMDSS GPT Login</title>
+  <script src="https://unpkg.com/tabletop@1.5.1/tabletop.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      text-align: center;
+    }
+    input {
+      padding: 10px;
+      margin: 8px;
+      width: 250px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>GMDSS GPT Login</h2>
+  <input type="text" id="name" placeholder="Enter your name"><br>
+  <input type="email" id="email" placeholder="Enter your email"><br>
+  <button onclick="checkAccess()">Login</button>
+  <div class="error" id="errorMsg"></div>
+
+  <script>
+    const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma"; // replace with your GPT URL
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/14U4BnSNScGM-QBNv-5b1Pvk9t6VaAOpLr1OJebCEHzg/pubhtml"; // replace with your sheet
+
+    function checkAccess() {
+      const name = document.getElementById("name").value.trim().toLowerCase();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const errorMsg = document.getElementById("errorMsg");
+      errorMsg.innerText = "";
+
+      if (!name || !email) {
+        errorMsg.innerText = "Please enter both name and email.";
+        return;
+      }
+
+      Tabletop.init({
+        key: SHEET_URL,
+        simpleSheet: true,
+        callback: function(data) {
+          const match = data.find(row =>
+            row.Name.trim().toLowerCase() === name &&
+            row.Email.trim().toLowerCase() === email
+          );
+
+          if (match) {
+            window.location.href = GPT_LINK;
+          } else {
+            errorMsg.innerText = "Access Denied. You are not on the list.";
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
