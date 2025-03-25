@@ -52,7 +52,8 @@
 
   <script>
     const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
-    const SHEET_KEY = "2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD"; // Just the published key
+    
+key: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml",
 
     function checkAccess() {
       const name = document.getElementById("name").value.trim().toLowerCase();
@@ -71,31 +72,35 @@
       loadingMsg.innerText = "Checking access...";
 
       Tabletop.init({
-        key: `https://docs.google.com/spreadsheets/d/e/${SHEET_KEY}/pubhtml`,
-        simpleSheet: true,
-        callback: function(data) {
-          console.log("Data received:", data); // Debug log
-          const match = data.find(row =>
-            row.Name?.trim().toLowerCase() === name &&
-            row.Email?.trim().toLowerCase() === email
-          );
+  key: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml",
+  simpleSheet: true,
+  callback: function(data) {
+    console.log("Data received:", data); // Debug log
+    const name = document.getElementById("name").value.trim().toLowerCase();
+    const email = document.getElementById("email").value.trim().toLowerCase();
 
-          if (match) {
-            loadingMsg.innerText = "✅ Access granted! Redirecting...";
-            setTimeout(() => {
-              window.location.href = GPT_LINK;
-            }, 1000);
-          } else {
-            loadingMsg.innerText = "";
-            errorMsg.innerText = "❌ Access Denied. You are not on the list.";
-          }
-        },
-        error: function(err) {
-          loadingMsg.innerText = "";
-          errorMsg.innerText = "⚠️ Failed to load data. Check the sheet or internet connection.";
-          console.error("Tabletop error:", err);
-        }
-      });
+    const match = data.find(row =>
+      row.Name?.trim().toLowerCase() === name &&
+      row.Email?.trim().toLowerCase() === email
+    );
+
+    if (match) {
+      loadingMsg.innerText = "✅ Access granted! Redirecting...";
+      setTimeout(() => {
+        window.location.href = GPT_LINK;
+      }, 1000);
+    } else {
+      loadingMsg.innerText = "";
+      errorMsg.innerText = "❌ Access Denied. You are not on the list.";
+    }
+  },
+  error: function(err) {
+    loadingMsg.innerText = "";
+    errorMsg.innerText = "⚠️ Failed to load data. Check the sheet or internet connection.";
+    console.error("Tabletop error:", err);
+  }
+});
+
     }
   </script>
 </body>
