@@ -65,15 +65,14 @@
 
   <div id="message" class="message"></div>
 
-  <!-- ✅ Load Tabletop -->
+  <!-- ✅ Load Tabletop BEFORE our code -->
   <script src="https://unpkg.com/tabletop@1.5.1/tabletop.js"></script>
 
-  <!-- ✅ Run code only after everything loads -->
   <script>
-    const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml";
-
     window.onload = function () {
+      const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
+      const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml";
+
       const loginBtn = document.getElementById("loginBtn");
       const message = document.getElementById("message");
 
@@ -93,7 +92,7 @@
         Tabletop.init({
           key: SHEET_URL,
           simpleSheet: true,
-          callback: function(data) {
+          callback: function (data) {
             const match = data.find(row =>
               row.Name?.trim().toLowerCase() === name &&
               row.Email?.trim().toLowerCase() === email
@@ -108,7 +107,7 @@
               message.innerText = "❌ Access denied. You are not on the list.";
             }
           },
-          error: function(err) {
+          error: function (err) {
             message.className = "message error";
             message.innerText = "⚠️ Failed to load the access list.";
             console.error("Tabletop error:", err);
