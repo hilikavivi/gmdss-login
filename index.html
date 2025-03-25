@@ -5,106 +5,66 @@
   <title>GMDSS SRC Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 50px 20px;
-      text-align: center;
-    }
-    h2 {
-      margin-bottom: 30px;
-    }
+    body { font-family: Arial; text-align: center; background: #f5f5f5; padding: 50px; }
     input, button {
-      padding: 12px;
-      margin: 10px;
-      width: 260px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      padding: 12px; margin: 10px; width: 260px; font-size: 16px;
+      border: 1px solid #ccc; border-radius: 6px;
     }
     button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      transition: background-color 0.2s ease-in-out;
+      background-color: #007bff; color: white; border: none;
     }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .message {
-      margin-top: 20px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .loading { color: #333; }
+    button:hover { background-color: #0056b3; }
+    .message { margin-top: 20px; font-weight: bold; }
     .error { color: red; }
     .success { color: green; }
   </style>
 </head>
 <body>
   <h2>GMDSS SRC Login</h2>
-
-  <input type="text" id="name" placeholder="Your name" /><br />
-  <input type="email" id="email" placeholder="Your email" /><br />
+  <input type="text" id="name" placeholder="Your name"><br>
+  <input type="email" id="email" placeholder="Your email"><br>
   <button id="loginBtn">Login</button>
-
   <div id="message" class="message"></div>
 
-  <!-- ✅ Load Tabletop script -->
-  <script src="https://unpkg.com/tabletop@1.5.1/tabletop.js"></script>
-
-  <!-- ✅ Main script waits for everything -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
-      const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml";
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5IwOLjkLvw4y3PLmv8qmA2Ir8m2UeRBvK095d2pmZuUZq9384epwjb8DyUQhIfgCl/exec";
+    const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
       const message = document.getElementById("message");
-      const loginBtn = document.getElementById("loginBtn");
 
-      loginBtn.addEventListener("click", () => {
-        if (typeof Tabletop === "undefined") {
-          message.className = "message error";
-          message.innerText = "⚠️ Tabletop.js failed to load.";
-          return;
-        }
+      if (!name || !email) {
+        message.innerText = "Please enter both name and email.";
+        message.className = "message error";
+        return;
+      }
 
-        const name = document.getElementById("name").value.trim().toLowerCase();
-        const email = document.getElementById("email").value.trim().toLowerCase();
+      message.innerText = "Checking access...";
+      message.className = "message";
 
-        if (!name || !email) {
-          message.className = "message error";
-          message.innerText = "Please enter both name and email.";
-          return;
-        }
-
-        message.className = "message loading";
-        message.innerText = "Checking access...";
-
-        Tabletop.init({
-          key: SHEET_URL,
-          simpleSheet: true,
-          callback: function (data) {
-            const match = data.find(row =>
-              row.Name?.trim().toLowerCase() === name &&
-              row.Email?.trim().toLowerCase() === email
-            );
-
-            if (match) {
-              message.className = "message success";
-              message.innerText = "✅ Access granted! Redirecting...";
-              setTimeout(() => window.location.href = GPT_LINK, 1200);
-            } else {
-              message.className = "message error";
-              message.innerText = "❌ Access denied. You are not on the list.";
-            }
-          },
-          error: function (err) {
-            message.className = "message error";
-            message.innerText = "⚠️ Failed to load access list.";
-            console.error(err);
-          }
+      try {
+        const res = await fetch(WEBAPP_URL, {
+          method: "POST",
+          body: JSON.stringify({ name, email }),
+          headers: { "Content-Type": "application/json" }
         });
-      });
+        const result = await res.json();
+
+        if (result.access) {
+          message.innerText = "✅ Access granted! Redirecting...";
+          message.className = "message success";
+          setTimeout(() => window.location.href = GPT_LINK, 1000);
+        } else {
+          message.innerText = "❌ Access denied. You are not on the list.";
+          message.className = "message error";
+        }
+      } catch (err) {
+        console.error(err);
+        message.innerText = "⚠️ Login system error. Please try again later.";
+        message.className = "message error";
+      }
     });
   </script>
 </body>
