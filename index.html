@@ -61,57 +61,61 @@
 
   <input type="text" id="name" placeholder="Your name"><br>
   <input type="email" id="email" placeholder="Your email"><br>
-  <button onclick="checkAccess()">Login</button>
+  <button id="loginBtn">Login</button>
 
   <div id="message" class="message"></div>
 
-  <!-- ✅ Load Tabletop BEFORE your script -->
+  <!-- ✅ Load Tabletop -->
   <script src="https://unpkg.com/tabletop@1.5.1/tabletop.js"></script>
 
+  <!-- ✅ Run code only after everything loads -->
   <script>
     const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml";
 
-    function checkAccess() {
-      const name = document.getElementById("name").value.trim().toLowerCase();
-      const email = document.getElementById("email").value.trim().toLowerCase();
+    window.onload = function () {
+      const loginBtn = document.getElementById("loginBtn");
       const message = document.getElementById("message");
 
-      message.className = "message loading";
-      message.innerText = "Checking access...";
+      loginBtn.addEventListener("click", function () {
+        const name = document.getElementById("name").value.trim().toLowerCase();
+        const email = document.getElementById("email").value.trim().toLowerCase();
 
-      if (!name || !email) {
-        message.className = "message error";
-        message.innerText = "Please enter both name and email.";
-        return;
-      }
+        message.className = "message loading";
+        message.innerText = "Checking access...";
 
-      Tabletop.init({
-        key: SHEET_URL,
-        simpleSheet: true,
-        callback: function(data) {
-          const match = data.find(row =>
-            row.Name?.trim().toLowerCase() === name &&
-            row.Email?.trim().toLowerCase() === email
-          );
-
-          if (match) {
-            message.className = "message success";
-            message.innerText = "✅ Access granted! Redirecting...";
-            setTimeout(() => window.location.href = GPT_LINK, 1200);
-          } else {
-            message.className = "message error";
-            message.innerText = "❌ Access denied. You are not on the list.";
-          }
-        },
-        error: function(err) {
+        if (!name || !email) {
           message.className = "message error";
-          message.innerText = "⚠️ Failed to load the access list. Try again later.";
-          console.error("Tabletop error:", err);
+          message.innerText = "Please enter both name and email.";
+          return;
         }
+
+        Tabletop.init({
+          key: SHEET_URL,
+          simpleSheet: true,
+          callback: function(data) {
+            const match = data.find(row =>
+              row.Name?.trim().toLowerCase() === name &&
+              row.Email?.trim().toLowerCase() === email
+            );
+
+            if (match) {
+              message.className = "message success";
+              message.innerText = "✅ Access granted! Redirecting...";
+              setTimeout(() => window.location.href = GPT_LINK, 1200);
+            } else {
+              message.className = "message error";
+              message.innerText = "❌ Access denied. You are not on the list.";
+            }
+          },
+          error: function(err) {
+            message.className = "message error";
+            message.innerText = "⚠️ Failed to load the access list.";
+            console.error("Tabletop error:", err);
+          }
+        });
       });
-    }
+    };
   </script>
 </body>
 </html>
-
