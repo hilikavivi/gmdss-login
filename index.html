@@ -52,7 +52,7 @@
 
   <script>
     const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml";
+    const SHEET_KEY = "2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD"; // Just the published key
 
     function checkAccess() {
       const name = document.getElementById("name").value.trim().toLowerCase();
@@ -71,9 +71,10 @@
       loadingMsg.innerText = "Checking access...";
 
       Tabletop.init({
-        key: SHEET_URL,
+        key: `https://docs.google.com/spreadsheets/d/e/${SHEET_KEY}/pubhtml`,
         simpleSheet: true,
         callback: function(data) {
+          console.log("Data received:", data); // Debug log
           const match = data.find(row =>
             row.Name?.trim().toLowerCase() === name &&
             row.Email?.trim().toLowerCase() === email
@@ -91,15 +92,10 @@
         },
         error: function(err) {
           loadingMsg.innerText = "";
-          errorMsg.innerText = "⚠️ Failed to load access list. Check your connection or Sheet settings.";
-          console.error(err);
+          errorMsg.innerText = "⚠️ Failed to load data. Check the sheet or internet connection.";
+          console.error("Tabletop error:", err);
         }
       });
-    }
-  </script>
-</body>
-</html>
-
     }
   </script>
 </body>
