@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>GMDSS SRC Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/tabletop@1.5.1/tabletop.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -66,6 +65,9 @@
 
   <div id="message" class="message"></div>
 
+  <!-- ✅ Load Tabletop BEFORE your script -->
+  <script src="https://unpkg.com/tabletop@1.5.1/tabletop.js"></script>
+
   <script>
     const GPT_LINK = "https://chatgpt.com/g/g-67dfd76240ec8191a203ed6ffe38bf8f-training-for-gmdss-src-diploma";
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJ0ckyeUNAnaITnDbzHUIUI_8gvOxKfaPjeD-gb2loFxqyrhwofEmMGPsOttzX1LVXnqlLCFLxebVD/pubhtml";
@@ -76,15 +78,13 @@
       const message = document.getElementById("message");
 
       message.className = "message loading";
-      message.innerText = "";
+      message.innerText = "Checking access...";
 
       if (!name || !email) {
         message.className = "message error";
         message.innerText = "Please enter both name and email.";
         return;
       }
-
-      message.innerText = "Checking access...";
 
       Tabletop.init({
         key: SHEET_URL,
@@ -114,3 +114,4 @@
   </script>
 </body>
 </html>
+
